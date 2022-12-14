@@ -1,53 +1,70 @@
-import { Form, FormLabel, FormInput, FormBtn } from './ContactForm.styled';
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts, addMyContact } from 'redux/contactsSlice';
-import { nanoid } from 'nanoid';
+import {
+  FormikForm,
+  FormLabel,
+  FormInput,
+  FormBtn,
+} from './ContactForm.styled';
+import { Formik, ErrorMessage } from 'formik';
+import * as yup from 'yup';
 
-export default function ContactForm() {
-  const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
+const schema = yup.object({
+  name: yup
+    .string()
+    .matches(/^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/)
+    .min(2, 'Too short!')
+    .max(30, 'Too long!')
+    .required('Required'),
+  number: yup
+    .string()
+    .matches(
+      /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/
+    )
+    .min(5, 'Too short!')
+    .max(30, 'Too long!')
+    .required('Required'),
+});
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    const name = event.currentTarget.elements.name.value;
-    const number = event.currentTarget.elements.number.value;
-    const isExist = contacts.find(contact => contact.name === name);
-
-    if (isExist) {
-      alert(`${name} is already in contacts.`);
-      return;
+export const ContactForm = ({
+  initialValues = { name: '', number: '' },
+  onSubmit,
+  btnText,
+}) => {
+  const handleSubmit = async (values, { resetForm }) => {
+    try {
+      await onSubmit(values);
+      resetForm();
+    } catch (error) {
+      console.log(error.message);
     }
-
-    const contact = {
-      id: nanoid(),
-      name,
-      number,
-    };
-
-    dispatch(addMyContact(contact));
-
-    document.getElementById('form').reset();
   };
 
   return (
-    <Form onSubmit={handleSubmit} id="form">
-      <FormLabel>Name</FormLabel>
-      <FormInput
-        type="text"
-        name="name"
-        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-        title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-        required
-      />
-      <FormLabel>Number</FormLabel>
-      <FormInput
-        type="tel"
-        name="number"
-        pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-        title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-        required
-      />
-      <FormBtn type="submit">Add contact</FormBtn>
-    </Form>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={schema}
+      onSubmit={handleSubmit}
+    >
+      <FormikForm>
+        <FormLabel>Name</FormLabel>
+        <ErrorMessage name="name" />
+        <FormInput
+          type="text"
+          name="name"
+          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          required
+        />
+        <FormLabel>Number</FormLabel>
+        <ErrorMessage name="number" />
+        <FormInput
+          type="tel"
+          name="number"
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+          required
+        />
+        <FormBtn type="submit">{btnText}</FormBtn>
+      </FormikForm>
+    </Formik>
   );
-}
+};

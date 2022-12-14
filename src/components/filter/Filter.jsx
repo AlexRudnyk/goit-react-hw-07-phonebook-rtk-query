@@ -1,11 +1,11 @@
 import { FilterInput, FilterTitle } from './Filter.styled';
-import { useDispatch } from 'react-redux';
-import { filterMyContact } from 'redux/contactsSlice';
+// import { useDispatch } from 'react-redux';
+// import { filterMyContact } from 'redux/contactsSlice';
 
 const Filter = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const changeFilter = event => {
-    dispatch(filterMyContact(event.currentTarget.value));
+    // dispatch(filterMyContact(event.currentTarget.value));
   };
 
   return (

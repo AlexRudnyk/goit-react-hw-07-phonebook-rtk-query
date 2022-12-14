@@ -1,15 +1,15 @@
-import ContactForm from './contactForm';
+import { AddContact } from './addContact/AddContact';
 import ContactList from './contactList';
-import Filter from './filter';
+// import Filter from './filter';
 import { AppTitle, ListTitle, Container } from './App.styled';
 
 export default function App() {
   return (
     <Container>
       <AppTitle>Phonebook</AppTitle>
-      <ContactForm />
+      <AddContact />
       <ListTitle>Contacts</ListTitle>
-      <Filter />
+      {/* <Filter /> */}
       <ContactList />
     </Container>
   );
