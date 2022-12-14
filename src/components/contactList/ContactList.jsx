@@ -1,8 +1,16 @@
 import { useFetchContactsQuery } from 'redux/contactsSlice';
 import { ContactItem } from 'components/contactItem/ContactItem';
+import { useSelector } from 'react-redux';
+import { selectFilter } from 'redux/filterSlice';
 
 const ContactList = () => {
   const { data: contacts, error, isLoading } = useFetchContactsQuery();
+  const filter = useSelector(selectFilter);
+  const filtredContacts = !contacts
+    ? []
+    : contacts.filter(contact =>
+        contact.name.toLowerCase().includes(filter.toLowerCase())
+      );
 
   return (
     <>
@@ -11,7 +19,7 @@ const ContactList = () => {
         <b>Downloading contacts</b>
       ) : (
         <ul>
-          {contacts.map(contact => (
+          {filtredContacts.map(contact => (
             <ContactItem contact={contact} key={contact.id} />
           ))}
         </ul>
